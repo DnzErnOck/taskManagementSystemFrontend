@@ -1,26 +1,38 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Layout } from 'antd';
+import Navbar from './components/Navbar';
+import AppFooter from './components/Footer';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import TaskListPage from './pages/TaskListPage';
+import Register from './pages/Register';
 
-function App() {
+const { Header, Content, Footer } = Layout;
+
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Layout style={{ minHeight: '100vh' }}>
+        <Header>
+          <Navbar />
+        </Header>
+        <Content style={{ padding: '0 50px', marginTop: 64 }}>
+          <div className="site-layout-background" style={{ padding: 24, minHeight: 380 }}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/tasks" element={<TaskListPage />} />
+              <Route path="/register" element={<Register />} />
+            </Routes>
+          </div>
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>
+          <AppFooter />
+        </Footer>
+      </Layout>
+    </Router>
   );
-}
+};
 
 export default App;
