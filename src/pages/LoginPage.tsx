@@ -1,16 +1,28 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Row, Col, Typography, Card } from 'antd';
+import { Form, Input, Button, Row, Col, Typography, Card, message } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { signIn } from '../services/authService'; // AuthService'tan signIn fonksiyonunu import ediyoruz
 
 const { Title } = Typography;
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const handleLogin = () => {
-    // Giriş işlemi burada yapılacak
+  const navigate = useNavigate();
+  const handleLogin = async () => {
+    try {
+      const response = await signIn({email, password}); // AuthService'taki signIn fonksiyonunu kullanarak giriş yap
+      localStorage.setItem('token', response.token); // Dönen token'i local storage'a kaydet
+      message.success('Başarıyla giriş yapılmıştır.');
+      setTimeout(() => {
+        navigate('/'); // Kayıt başarılı olduğunda anasayfaya yönlendirme
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error logging in:', error); // Hata durumunda hata mesajını logla
+      message.error('Bilgiler Hatalı !');
+    }
   };
 
   return (

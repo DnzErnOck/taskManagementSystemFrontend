@@ -49,15 +49,20 @@ export const getTaskById = async (taskId: number): Promise<Task> => {
     throw error;
   }
 };
-
-export const getTasksOrderedByCreateDate = async (): Promise<Task[]> => {
+export const getTasksByUserId = async (userId: number): Promise<Task[]> => {
   try {
-    const response: AxiosResponse<Task[]> = await axios.get(`${API_URL}/ordered`);
+    const response: AxiosResponse<Task[]> = await axios.get(`${API_URL}/user/${userId}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching tasks ordered by create date:', error);
+    console.error('Error fetching tasks by user id:', error);
     throw error;
   }
+};
+
+
+export const getTasksOrderedByCreateDate = async (order: 'asc' | 'desc'): Promise<Task[]> => {
+  const response = await axios.get(`${API_URL}/ordered?sort=${order}`);
+  return response.data;
 };
 
 export const getTasksByStatus = async (status: string): Promise<Task[]> => {

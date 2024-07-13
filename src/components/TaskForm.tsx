@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
 import { Task } from '../types/Task';
+import { useAuth } from '../utils/AuthContext'; // useAuth hook'unu import ediyoruz
 
 const { Option } = Select;
 
@@ -11,6 +12,8 @@ interface TaskFormProps {
 }
 
 const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, resetForm }) => {
+  const { user } = useAuth(); // useAuth hook'undan kullanıcıyı alıyoruz
+
   const [id, setId] = useState(task ? task.id : 0);
   const [title, setTitle] = useState(task ? task.title : '');
   const [description, setDescription] = useState(task ? task.description : '');
@@ -45,7 +48,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, resetForm }) => {
       id,
       title,
       description,
-      userId: 1, // Sabit userId
+      userId: user ? user.id : 0, // Kullanıcı ID'sini buradan alıyoruz
       taskStatus,
       createdDate: createdDate ? new Date(createdDate) : undefined,
     };
@@ -63,12 +66,17 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, resetForm }) => {
         <Input value={title} onChange={(e) => setTitle(e.target.value)} />
       </Form.Item>
       <Form.Item label="Açıklama">
-        <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+        <Input.TextArea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          autoSize={{ minRows: 3, maxRows: 6 }}
+        />
       </Form.Item>
      
       {task && (
         <Form.Item label="Durum">
           <Select value={taskStatus} onChange={(value) => setTaskStatus(value)}>
+            <Option value="Yeni">Yeni</Option>
             <Option value="Çalışıyor">Çalışıyor</Option>
             <Option value="Tamamlandı">Tamamlandı</Option>
           </Select>

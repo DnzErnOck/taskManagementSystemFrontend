@@ -1,9 +1,8 @@
-
-
 import React, { useState } from 'react';
-import { Form, Input, Button, Row, Col, Typography, Card } from 'antd';
+import { Form, Input, Button, Row, Col, Typography, Card, message } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { registerUser } from '../services/authService';
 
 const { Title } = Typography;
 
@@ -12,9 +11,20 @@ const Register: React.FC = () => {
   const [surname, setSurname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [roleType, setRoleType] = useState('USER');
+  const navigate = useNavigate(); // useNavigate hook'unu burada tanımlıyoruz
 
-  const handleRegister = () => {
-    // Kayıt işlemi burada yapılacak
+  const handleRegister = async () => {
+    try {
+      await registerUser(name, surname, email, password, roleType);
+      console.log('User registered successfully!');
+      message.success('Kayıt işlemi başarıyla yapılmıştır.Hoşgeldiniz!');
+      setTimeout(() => {
+        navigate('/'); // Kayıt başarılı olduğunda anasayfaya yönlendirme
+      }, 3000);
+    } catch (error) {
+      console.error('Error registering user:', error);
+    }
   };
 
   return (
