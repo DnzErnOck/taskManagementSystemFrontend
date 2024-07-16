@@ -20,7 +20,6 @@ const AdminPanel: React.FC = () => {
   };
 
   const handleFormSubmit = async (values: any) => {
-    // Handle form submission logic here, e.g., calling backend service
     console.log('Form submitted with values:', values);
   };
 
@@ -30,7 +29,6 @@ const AdminPanel: React.FC = () => {
         return <UserTable />;
       case 'adminList':
         return <AdminTable />;
-      // Gelecekteki eklemeler için ek case'ler ekleyin.
       default:
         return <UserTable />;
     }
@@ -46,7 +44,6 @@ const AdminPanel: React.FC = () => {
           <Menu.Item key="adminList" icon={<PlusOutlined />}>
             Admin Listesi
           </Menu.Item>
-          {/* Gelecekteki eklemeler için menü öğeleri ekleyin */}
         </Menu>
       </Sider>
       <Layout className="site-layout">

@@ -3,6 +3,7 @@ import { Form, Input, Button, Row, Col, Typography, Card, message } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { signIn } from '../services/authService'; // AuthService'tan signIn fonksiyonunu import ediyoruz
+import { useAuth } from '../utils/AuthContext'; // AuthContext'ten useAuth'ı import ediyoruz
 
 const { Title } = Typography;
 
@@ -10,15 +11,15 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth(); 
+
   const handleLogin = async () => {
     try {
-      const response = await signIn({email, password}); // AuthService'taki signIn fonksiyonunu kullanarak giriş yap
+      const response = await signIn({ email, password }); // AuthService'taki signIn fonksiyonunu kullanarak giriş yap
       localStorage.setItem('token', response.token); // Dönen token'i local storage'a kaydet
+      login(response.token); // Kullanıcıyı AuthContext'e kaydet
       message.success('Başarıyla giriş yapılmıştır.');
-      setTimeout(() => {
-        navigate('/'); // Kayıt başarılı olduğunda anasayfaya yönlendirme
-      }, 3000);
-      
+      navigate('/'); // Giriş başarılı olduğunda anasayfaya yönlendirme
     } catch (error) {
       console.error('Error logging in:', error); // Hata durumunda hata mesajını logla
       message.error('Bilgiler Hatalı !');
@@ -26,7 +27,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <Row justify="center" align="middle" style={{ height: '60vh', backgroundColor: '#f0f2f5' }}>
+    <Row justify="center" align="middle" style={{ height: '60vh' }}>
       <Col>
         <Card
           style={{

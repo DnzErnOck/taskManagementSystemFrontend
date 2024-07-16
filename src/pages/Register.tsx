@@ -16,19 +16,25 @@ const Register: React.FC = () => {
 
   const handleRegister = async () => {
     try {
-      await registerUser(name, surname, email, password, roleType);
-      console.log('User registered successfully!');
-      message.success('Kayıt işlemi başarıyla yapılmıştır.Hoşgeldiniz!');
-      setTimeout(() => {
-        navigate('/'); // Kayıt başarılı olduğunda anasayfaya yönlendirme
-      }, 3000);
-    } catch (error) {
-      console.error('Error registering user:', error);
-    }
-  };
+        await registerUser(name, surname, email, password, roleType);
+        console.log('User registered successfully!');
+        message.success('Kayıt işlemi başarıyla yapılmıştır.Hoşgeldiniz!');
+        setTimeout(() => {
+            navigate('/'); // Kayıt başarılı olduğunda anasayfaya yönlendirme
+        }, 3000);
+    } catch (error:any) {
+        console.error('Error registering user:', error);
 
+        
+        if (error.response) {
+            message.error(error.response.data);
+        } else {
+            message.error('Kayıt işlemi sırasında bir hata oluştu.');
+        }
+    }
+};
   return (
-    <Row justify="center" align="middle" style={{ height: '60vh', backgroundColor: '#f0f2f5' }}>
+    <Row justify="center" align="middle" style={{ height: '60vh' }}>
       <Col>
         <Card
           style={{

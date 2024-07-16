@@ -6,7 +6,7 @@ const { Footer } = Layout;
 const AppFooter: React.FC = () => {
   return (
     <Footer style={{ textAlign: 'center' }}>
-      Task Manager ©2023 Created by ChatGPT
+      Task Manager ©2023 Created by Taskify
     </Footer>
   );
 };

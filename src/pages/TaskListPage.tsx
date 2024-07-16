@@ -1,52 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { List, Button, message, Card, Typography, Select, Modal } from 'antd';
 import { Task } from '../types/Task';
-import { getAllTasks, deleteTask, updateTask, createTask, getTasksByStatus, getTasksOrderedByCreateDate, getTasksByUserId } from '../services/taskService';
+import { deleteTask, updateTask, createTask } from '../services/taskService';
+import { getTasksFiltered } from '../services/taskService';
 import TaskForm from '../components/TaskForm';
 import { PlusOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
-import { useAuth } from '../utils/AuthContext'; // useAuth hook'unu import ediyoruz
+import { useAuth } from '../utils/AuthContext';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 const TaskListPage: React.FC = () => {
-  const { user } = useAuth(); // useAuth hook'undan kullanıcıyı alıyoruz
-  const [tasks, setTasks] = useState<Task[]>([]); // State to hold tasks fetched from backend
-  const [editingTask, setEditingTask] = useState<Task | undefined>(undefined); // State for currently editing task
-  const [isFormVisible, setIsFormVisible] = useState(false); // State to control visibility of task form modal
-  const [resetForm, setResetForm] = useState(false); // State to trigger form reset
-  const [filteredStatus, setFilteredStatus] = useState<string | undefined>(undefined); // State to hold status filter
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // State to hold sort order
+  const { user } = useAuth();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [resetForm, setResetForm] = useState(false);
+  const [filteredStatus, setFilteredStatus] = useState<string | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     fetchTasks();
-  }, [filteredStatus, sortOrder]); // Fetch tasks on component mount and when filters or sort order change
+  }, [filteredStatus, sortOrder]);
 
-  // Function to fetch tasks from backend based on filters and sort order
   const fetchTasks = async () => {
     try {
       if (!user) {
-        return; // Eğer kullanıcı yoksa hiçbir şey yapma
+        return;
       }
 
-      let fetchedTasks: Task[] = [];
-
-      // Kullanıcı ID'sine göre görevleri al
-      fetchedTasks = await getTasksByUserId(user.id);
-
-      // Check if a status filter is applied
-      if (filteredStatus) {
-        fetchedTasks = fetchedTasks.filter(task => task.taskStatus === filteredStatus);
-      }
-
-      // Apply local sorting based on sort order
-      if (sortOrder === 'asc') {
-        fetchedTasks.sort((a, b) => (a.createdDate > b.createdDate ? 1 : -1));
-      } else if (sortOrder === 'desc') {
-        fetchedTasks.sort((a, b) => (a.createdDate < b.createdDate ? 1 : -1));
-      }
-
-      // Update tasks state with fetched tasks
+      const fetchedTasks = await getTasksFiltered(user.id, filteredStatus, sortOrder);
       setTasks(fetchedTasks);
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -54,12 +37,9 @@ const TaskListPage: React.FC = () => {
     }
   };
 
-  // Function to handle task deletion
   const handleDelete = async (taskId: number) => {
     try {
-      // Delete task by ID
       await deleteTask(taskId);
-      // Fetch updated task list after deletion
       fetchTasks();
       message.success('Görev başarıyla silindi.');
     } catch (error) {
@@ -68,27 +48,22 @@ const TaskListPage: React.FC = () => {
     }
   };
 
-  // Function to handle task editing
   const handleEdit = (task: Task) => {
-    setEditingTask(task); // Set the task to be edited
-    setIsFormVisible(true); // Show the task form modal
-    setResetForm(false); // Do not reset form fields when editing
+    setEditingTask(task);
+    setIsFormVisible(true);
+    setResetForm(false);
   };
 
-  // Function to handle task form submission
   const handleFormSubmit = async (taskData: Omit<Task, 'id' | 'createdDate'>) => {
     try {
       if (editingTask) {
-        // Update existing task
         await updateTask({ ...taskData, id: editingTask.id });
         message.success('Görev başarıyla güncellendi.');
       } else {
-        // Create new task
         await createTask(taskData);
         message.success('Yeni görev başarıyla eklendi.');
       }
 
-      // Reset form and fetch updated task list
       setEditingTask(undefined);
       setIsFormVisible(false);
       setResetForm(true);
@@ -99,34 +74,28 @@ const TaskListPage: React.FC = () => {
     }
   };
 
-  // Function to handle status filter change
   const handleStatusFilterChange = async (value: string | undefined) => {
-    setFilteredStatus(value || undefined); // Update status filter
-    setSortOrder('asc'); // Reset sort order when changing filters
-    // Do not fetch tasks here, let useEffect handle it
+    setFilteredStatus(value || undefined);
+    setSortOrder('asc');
   };
 
-  // Function to toggle sort order between ascending and descending
   const toggleSortOrder = () => {
-    setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc')); // Toggle sort order
-    // Do not fetch tasks here, let useEffect handle it
+    setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
   };
 
-  // Function to get status color based on task status
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Yeni':
-        return '#4876ff'; // Blue
+        return '#4876ff';
       case 'Çalışıyor':
-        return '#87d068'; // Green
+        return '#87d068';
       case 'Tamamlandı':
-        return '#f52d2d'; // Red
+        return '#f52d2d';
       default:
-        return 'inherit'; // Default color
+        return 'inherit';
     }
   };
 
-  // Render task list page UI
   return (
     <div style={{ maxWidth: '800px', margin: 'auto', padding: '20px' }}>
       <Title level={2} style={{ textAlign: 'center' }}>Görev Listesi</Title>
@@ -145,7 +114,6 @@ const TaskListPage: React.FC = () => {
         allowClear
         onChange={handleStatusFilterChange}
       >
-        <Option value="">Tümü</Option>
         <Option value="NEW">Yeni</Option>
         <Option value="IN_PROGRESS">Çalışıyor</Option>
         <Option value="COMPLETE">Tamamlandı</Option>

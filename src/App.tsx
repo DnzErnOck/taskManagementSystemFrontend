@@ -10,6 +10,8 @@ import TaskListPage from './pages/TaskListPage';
 import Register from './pages/Register';
 import { AuthProvider } from './utils/AuthContext';
 import AdminPanel from './pages/AdminPanel';
+import Profile from './pages/Profile';
+import ChangePassword from './pages/ChangePassword';
 const { Header, Content, Footer } = Layout;
 
 const App: React.FC = () => {
@@ -28,6 +30,8 @@ const App: React.FC = () => {
                 <Route path="/tasks" element={<TaskListPage />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/adminPanel" element={<AdminPanel />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/change-password" element={<ChangePassword />} />
               </Routes>
             </div>
           </Content>

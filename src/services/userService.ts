@@ -39,6 +39,13 @@ const userService = {
   deleteUser: async (id: number): Promise<void> => {
     await api.delete(`/users/${id}`);
   },
+  updatePassword: async (id: number, password: string): Promise<UserResponse> => {
+    const response = await api.put('/users/updatePassword', null, {
+      params: { id, password }
+    });
+    return response.data;
+  },
+  
 };
 
 export default userService;

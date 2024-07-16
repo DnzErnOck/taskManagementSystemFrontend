@@ -75,4 +75,16 @@ export const getTasksByStatus = async (status: string): Promise<Task[]> => {
     console.error('Error fetching tasks by status:', error);
     throw error;
   }
+  
+};
+export const getTasksFiltered = async (userId?: number, status?: string, sortOrder: 'asc' | 'desc' = 'asc'): Promise<Task[]> => {
+  try {
+    const response = await axios.get(`${API_URL}/taskFiltred`, {
+      params: { userId, status, sortOrder }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching filtered tasks:', error);
+    throw error;
+  }
 };
